@@ -1,0 +1,18 @@
+FROM maven:3.9.9-eclipse-temurin-21 AS build
+
+ARG SERVICE_DIR
+WORKDIR /workspace
+COPY . .
+WORKDIR /workspace/${SERVICE_DIR}
+RUN set -eu; \
+    chmod +x ./mvnw; \
+    ./mvnw -B -DskipTests package; \
+    set -- target/*.jar; \
+    [ "$#" -eq 1 ]; \
+    mkdir -p /app; \
+    cp "$1" /app/app.jar
+
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=build /app/app.jar /app/app.jar
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

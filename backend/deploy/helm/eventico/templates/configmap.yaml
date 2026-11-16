@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "eventico.fullname" . }}-platform
+  namespace: {{ .Values.namespace }}
+data:
+  CONFIG_SERVER_URL: {{ .Values.global.configServerUrl | quote }}
+  EUREKA_SERVER_URL: {{ .Values.global.eurekaServerUrl | quote }}
+  KAFKA_BOOTSTRAP_SERVERS: {{ .Values.global.kafkaBootstrapServers | quote }}
+  REDIS_HOST: {{ .Values.global.redisHost | quote }}
+  REDIS_PORT: {{ .Values.global.redisPort | quote }}
+  EVENTICO_DB_URL: {{ .Values.global.eventicoDbUrl | quote }}
+  FORM_DB_URL: {{ .Values.global.formDbUrl | quote }}
+  TIMECLOCK_DB_URL: {{ .Values.global.timeclockDbUrl | quote }}
+  FINANCE_DB_URL: {{ .Values.global.financeDbUrl | quote }}
+  FLYWAY_ENABLED: "true"
+  JWT_SECURITY_ENABLED: {{ .Values.global.jwtEnabled | quote }}
+  JWT_AUDIENCE: {{ required "global.jwtAudience must be configured" .Values.global.jwtAudience | quote }}

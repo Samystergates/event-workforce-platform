@@ -1,0 +1,212 @@
+
+package com.rentmen.app.controllers;
+
+import com.rentmen.app.DTO.ApiResponse;
+import com.rentmen.app.DTO.SkillDto;
+import com.rentmen.app.DTO.UserDto;
+import com.rentmen.app.configurations.CustomUserDetailService;
+import com.rentmen.app.services.SkillService;
+import com.rentmen.app.services.UserService;
+import com.rentmen.app.services.imp.JobAuthorizationService;
+import com.rentmen.app.utils.UtilFunctions;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+@RestController
+@RequestMapping({"/api/user"})
+@CrossOrigin
+public class UserController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private CustomUserDetailService userDetailsService;
+    @Autowired
+    private SkillService skillService;
+    @Autowired
+    private JobAuthorizationService jobAuthorizationService;
+
+    public UserController() {
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping({"/admin/usermanagement"})
+    public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto) {
+        UserDto createUser = this.userService.createUser(userDto);
+        return new ResponseEntity(createUser, HttpStatus.CREATED);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping({"/admin/usermanagement/{userId}"})
+    public ResponseEntity<UserDto> updateUser(@RequestBody @Valid UserDto userDto, @PathVariable("userId") Long userId) {
+        UserDto updateUser = this.userService.updateUser(userDto, userId);
+        return ResponseEntity.ok(updateUser);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping({"/admin/usermanagement/{userId}"})
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") Long userId) {
+        this.userService.deleteUser(userId);
+        return new ResponseEntity(new ApiResponse("User Deleted Successfully", "", true), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping({"/admin/usermanagement/get/{userId}"})
+    public ResponseEntity<UserDto> getUser(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(this.userService.getUserById(userId));
+    }
+
+    @GetMapping({"/login"})
+    public void userLogin() {
+    }
+
+    @PostMapping({"/logout"})
+    public void logout(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        SecurityContextHolder.clearContext();
+    }
+
+    @GetMapping({"/getAllClients"})
+    public ResponseEntity<List<UserDto>> getAllClients() {
+        return ResponseEntity.ok(this.userService.getAllClients());
+    }
+
+    @GetMapping({"/getAllServiceProviders/{minRating}", "/getAllServiceProviders"})
+    public ResponseEntity<List<UserDto>> getAllServiceProviders(@PathVariable(required = false) Float minRating) {
+        return ResponseEntity.ok(this.userService.getAllServiceProviders(minRating));
+    }
+
+    @GetMapping({"/getAllModerators"})
+    public ResponseEntity<List<UserDto>> getAllModerators() {
+        return ResponseEntity.ok(this.userService.getAllModerators());
+    }
+
+    @GetMapping({"/getAllSkills"})
+    public ResponseEntity<Set<SkillDto>> getAllSkills() {
+        Set<SkillDto> data = this.skillService.getAllSkills();
+        return ResponseEntity.ok(data);
+    }
+
+    @PostMapping({"/createSkill"})
+    public ResponseEntity<?> createSkill(@RequestBody SkillDto skillDto) {
+        return ResponseEntity.ok(this.skillService.createSkill(skillDto));
+    }
+
+    @GetMapping({"/getClient/{id}"})
+    public ResponseEntity<?> getClient(@PathVariable(required = true) Long id) {
+        jobAuthorizationService.assertCanAccessAccountId(id, 1);
+        return ResponseEntity.ok(this.userService.getClient(id));
+    }
+
+    @GetMapping({"/getModerator/{id}"})
+    public ResponseEntity<?> getModerator(@PathVariable(required = true) Long id) {
+        jobAuthorizationService.assertCanAccessAccountId(id, 2);
+        return ResponseEntity.ok(this.userService.getModerator(id));
+    }
+
+    @GetMapping({"/getServiceProvider/{id}"})
+    public ResponseEntity<?> getServiceProvider(@PathVariable(required = true) Long id) {
+        jobAuthorizationService.assertCanActAsServiceProvider(id);
+        return ResponseEntity.ok(this.userService.getServiceProvider(id));
+    }
+
+    @PostMapping(
+            path = {"/updateClient"}
+    )
+    public ResponseEntity<?> updateClient(@RequestBody UserDto dto) throws Exception {
+        jobAuthorizationService.assertCanAccessAccountId(dto.getId(), 1);
+        return ResponseEntity.ok(this.userService.updateClient(dto));
+    }
+
+    @PostMapping(
+            path = {"/updateModerator"}
+    )
+    public ResponseEntity<?> updateModerator(@RequestBody UserDto dto) throws Exception {
+        jobAuthorizationService.assertCanAccessAccountId(dto.getId(), 2);
+        return ResponseEntity.ok(this.userService.updateModerator(dto));
+    }
+
+    @PostMapping(
+            path = {"/updateServiceProvider"}
+    )
+    public ResponseEntity<?> updateServiceProvider(@RequestBody UserDto dto) throws Exception {
+        jobAuthorizationService.assertCanActAsServiceProvider(dto.getId());
+        return ResponseEntity.ok(this.userService.updateServiceProvider(dto));
+    }
+
+    @GetMapping({"/getServiceProvidersAvailableBetweenDates/{startDate}/{endDate}"})
+    public ResponseEntity<?> getServiceProvidersAvailableBetweenDates(@PathVariable(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate, @PathVariable(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) throws Exception {
+        return ResponseEntity.ok(this.userService.getServiceProvidersAvailableBetweenDates(startDate, endDate));
+    }
+
+    @GetMapping({"/getServiceProvidersBetweenDates/{startDate}/{endDate}"})
+    public ResponseEntity<Map<String,List<UserDto>>> getServiceProvidersBetweenDates(@PathVariable(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate, @PathVariable(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) throws Exception {
+        List<UserDto> availables =  this.userService.getServiceProvidersAvailableBetweenDates(startDate, endDate);
+        List<UserDto> unavailables =  this.userService.getServiceProvidersUnavailableBetweenDates(startDate, endDate);
+        List<UserDto> unknowns =  this.userService.getServiceProvidersUnknownBetweenDates(startDate, endDate);
+        List<UserDto> maybes =  this.userService.getServiceProvidersMaybeBetweenDates(startDate, endDate);
+
+        Map<String,List<UserDto>> map = new HashMap<>();
+        map.put("Available",availables);
+        map.put("Unavailable",unavailables);
+        map.put("Unknown",unknowns);
+        map.put("Maybe",maybes);
+        return ResponseEntity.ok(map);
+    }
+
+    @GetMapping({"/getUserProfileImage/{fileName}"})
+    public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable String fileName) throws IOException {
+        byte[] imageData = UtilFunctions.downloadFileFromFileSystem(fileName, 1);
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("image/png")).body(imageData);
+    }
+
+    @GetMapping({"/getUserAgreement/{fileName}"})
+    public ResponseEntity<?> downloadAgreementFromFileSystem(@PathVariable String fileName) throws IOException {
+        byte[] imageData = UtilFunctions.downloadFileFromFileSystem(fileName, 2);
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("application/pdf")).body(imageData);
+    }
+
+    @PostMapping({"/updateUserProfileImage"})
+    public ResponseEntity<?> updateUserProfileImage(@RequestParam("userId") Long userId, @RequestParam("profile_image") MultipartFile image) throws Exception {
+        jobAuthorizationService.assertCanAccessOwnId(userId);
+        return ResponseEntity.ok(this.userService.updateUserFile(userId, image, 1));
+    }
+
+    @PostMapping({"/updateUserAgreement"})
+    public ResponseEntity<?> updateUserAgreement(@RequestParam("userId") Long userId, @RequestParam("file") MultipartFile file) throws Exception {
+        jobAuthorizationService.assertCanAccessOwnId(userId);
+        return ResponseEntity.ok(this.userService.updateUserFile(userId, file, 2));
+    }
+}

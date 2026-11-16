@@ -1,0 +1,11 @@
+description: "Get uploaded file paths for a service provider review form"
+request:
+  method: GET
+  urlPath: /api/form/12/34/files
+response:
+  status: 200
+  headers:
+    Content-Type: application/json
+  body:
+    - "uploads/sample-file-1.pdf"
+    - "uploads/sample-file-2.jpg"

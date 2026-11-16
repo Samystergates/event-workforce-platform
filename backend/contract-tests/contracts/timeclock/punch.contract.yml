@@ -1,0 +1,15 @@
+description: "Submit a punch event"
+request:
+  method: POST
+  urlPath: /api/timeclock/punch
+  headers:
+    Content-Type: application/json
+  body:
+    pin: "1234"
+    action: "CLOCK_IN"
+response:
+  status: 200
+  headers:
+    Content-Type: application/json
+  body:
+    success: true

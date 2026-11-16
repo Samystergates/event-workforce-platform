@@ -1,0 +1,62 @@
+package com.eventico.finance.dtos;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+
+// InvoiceDetailDto.java
+public record InvoiceDetailDto(
+        Long id,
+        String invoiceNumber,
+        LocalDate invoiceDate,
+        String supplierName,
+        String supplierAddress,
+        String supplierPostalCode,
+        String supplierCity,
+        String supplierCountry,
+        String supplierVatNumber,
+        String supplierKvkNumber,
+        String customerName,
+        String customerAddress,
+        String customerPostalCode,
+        String customerCity,
+        String customerCountry,
+        String customerVatNumber,
+        BigDecimal amountExclVat,
+        BigDecimal vatAmount,
+        BigDecimal amountInclVat,
+        String currency,
+        BigDecimal vatPercentage,
+        Boolean vatReverseCharge,
+        String vatSpecification,
+        String supplierIban,
+        String supplierBic,
+        String paymentTerms,
+        LocalDate dueDate,
+        String paymentReference,
+        String descriptionSummary,
+        LocalDate servicePeriodStart,
+        LocalDate servicePeriodEnd,
+        String purchaseOrderNumber,
+        String projectReference,
+        String pdfFilePath,
+        String emailMessageId,
+        String emailFolder,
+        String emailSender,
+        String originalFilename,
+        Double extractionConfidence,
+        String extractionMethod,
+        String typeDetectionMethod,
+        String extractionWarnings,
+        String validationErrors,
+        String missingRequiredFields,
+        Boolean isValid,
+        Boolean isMatched,
+        Boolean isPaid,
+        OffsetDateTime importedAt,
+        OffsetDateTime createdAt,
+        OffsetDateTime updatedAt,
+        List<InvoiceLineDto> lines,
+        List<MatchRecordDto> matches
+) {}

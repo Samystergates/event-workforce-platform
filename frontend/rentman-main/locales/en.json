@@ -1,0 +1,28 @@
+{
+  "auth": {
+    "login": "Login",
+    "enterEmailBelow": "Enter your email below to login your account",
+    "byClicking": "By clicking continue, you agree to our",
+    "termsService": "Terms of Service",
+    "and": "and",
+    "privacy": "Privacy Policy",
+    "signEmail": "Enter your email address here...",
+    "enterPassword": "Enter your password here...",
+    "email": "Email",
+    "password": "Password",
+    "signEmailBtn": "Sign in with email",
+    "invalidEmail": "Invalid email address",
+    "fieldRequired": "This field is required."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "PROJECT OVERVIEW",
+    "projectName": "Project name",
+    "projectStatus": "Project status",
+    "projectNumber": "Project number",
+    "assignedMember": "Assigned member",
+    "freelancers": "Freelancers",
+    "clientOverview": "CLIENT OVERVIEW",
+    "clientName": "Client name"
+  }
+}

@@ -1,0 +1,109 @@
+{{- range $name, $cfg := .Values.services }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Values.namespace }}
+spec:
+  replicas: {{ $cfg.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+    spec:
+      containers:
+        - name: {{ $name }}
+          image: {{ $cfg.image }}
+          ports:
+            - containerPort: {{ $cfg.port }}
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: {{ $cfg.port }}
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: {{ $cfg.port }}
+            periodSeconds: 10
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: {{ $cfg.port }}
+            periodSeconds: 20
+            timeoutSeconds: 3
+          envFrom:
+            - configMapRef:
+                name: {{ include "eventico.fullname" $ }}-platform
+{{- if or (eq $name "api-gateway") (eq $name "eventico") (eq $name "form") (eq $name "timeclock") (eq $name "finance") }}
+          env:
+            - name: JWT_SIGNING_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.jwtSigningSecretName }}
+                  key: {{ $.Values.global.jwtSigningSecretKey }}
+{{- if eq $name "eventico" }}
+            - name: EVENTICO_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.databaseSecretName }}
+                  key: username
+            - name: EVENTICO_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.databaseSecretName }}
+                  key: password
+{{- else if eq $name "form" }}
+            - name: FORM_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.databaseSecretName }}
+                  key: username
+            - name: FORM_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.databaseSecretName }}
+                  key: password
+{{- else if eq $name "timeclock" }}
+            - name: TIMECLOCK_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.databaseSecretName }}
+                  key: username
+            - name: TIMECLOCK_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.databaseSecretName }}
+                  key: password
+{{- else if eq $name "finance" }}
+            - name: FINANCE_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.databaseSecretName }}
+                  key: username
+            - name: FINANCE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.databaseSecretName }}
+                  key: password
+{{- end }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Values.namespace }}
+spec:
+  selector:
+    app: {{ $name }}
+  ports:
+    - port: {{ $cfg.port }}
+      targetPort: {{ $cfg.port }}
+---
+{{- end }}

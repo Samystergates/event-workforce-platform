@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eventico-platform-config
+  namespace: eventico
+data:
+  CONFIG_SERVER_URL: "http://config-server:8080"
+  EUREKA_SERVER_URL: "http://service-registry:8761/eureka/"
+  KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  EVENTICO_DB_URL: "jdbc:mysql://mysql:3306/eventico-core-demo"
+  FORM_DB_URL: "jdbc:mysql://mysql:3306/eventico-form"
+  TIMECLOCK_DB_URL: "jdbc:mysql://mysql:3306/eventico-timeclock"
+  FINANCE_DB_URL: "jdbc:mysql://mysql:3306/eventico-finance"
+  FLYWAY_ENABLED: "true"
+  JWT_SECURITY_ENABLED: "true"
+  JWT_AUDIENCE: ""

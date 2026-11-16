@@ -1,0 +1,47 @@
+namespace: eventico
+
+global:
+  configServerUrl: http://config-server:8080
+  eurekaServerUrl: http://service-registry:8761/eureka/
+  kafkaBootstrapServers: kafka:9092
+  redisHost: redis
+  redisPort: 6379
+  eventicoDbUrl: jdbc:mysql://mysql:3306/eventico-core-demo
+  formDbUrl: jdbc:mysql://mysql:3306/eventico-form
+  timeclockDbUrl: jdbc:mysql://mysql:3306/eventico-timeclock
+  financeDbUrl: jdbc:mysql://mysql:3306/eventico-finance
+  jwtEnabled: "true"
+  jwtAudience: ""
+  jwtSigningSecretName: eventico-jwt-secrets
+  jwtSigningSecretKey: signing-secret
+  databaseSecretName: eventico-database-secrets
+
+services:
+  service-registry:
+    image: ghcr.io/your-org/eventico-service-registry:latest
+    replicas: 1
+    port: 8761
+  config-server:
+    image: ghcr.io/your-org/eventico-config-server:latest
+    replicas: 1
+    port: 8080
+  api-gateway:
+    image: ghcr.io/your-org/eventico-api-gateway:latest
+    replicas: 2
+    port: 8060
+  eventico:
+    image: ghcr.io/your-org/eventico-core:latest
+    replicas: 2
+    port: 9090
+  form:
+    image: ghcr.io/your-org/eventico-form:latest
+    replicas: 2
+    port: 9094
+  timeclock:
+    image: ghcr.io/your-org/eventico-timeclock:latest
+    replicas: 2
+    port: 8082
+  finance:
+    image: ghcr.io/your-org/eventico-finance:latest
+    replicas: 2
+    port: 9091

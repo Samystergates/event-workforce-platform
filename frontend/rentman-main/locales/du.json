@@ -1,0 +1,28 @@
+{
+  "auth": {
+    "login": "Login",
+    "enterEmailBelow": "Voer hieronder uw e-mailadres in om in te loggen op uw account",
+    "byClicking": "Door op doorgaan te klikken, gaat u akkoord met onze",
+    "termsService": "Servicevoorwaarden",
+    "and": "En",
+    "privacy": "Privacybeleid",
+    "signEmail": "Vul hier uw e-mailadres in...",
+    "enterPassword": "Vul hier uw wachtwoord in...",
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "signEmailBtn": "Meld u aan met e-mail",
+    "invalidEmail": "Ongeldig e-mailadres",
+    "fieldRequired": "Dit veld is verplicht."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "PROJECTOVERZICHT",
+    "projectName": "Projectnaam",
+    "projectStatus": "Projectstatus",
+    "projectNumber": "Projectnummer",
+    "assignedMember": "Toegewezen lid",
+    "freelancers": "Freelancers",
+    "clientOverview": "KLANTOVERZICHT",
+    "clientName": "Klantnaam"
+  }
+}

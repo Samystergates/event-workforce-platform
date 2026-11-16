@@ -1,0 +1,92 @@
+# Root-level repo hygiene
+
+# Separate optional portfolio sample
+/portfolio-demo/
+
+# Environment files
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Node
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+coverage/
+**/coverage/
+
+# Java / build outputs
+**/target/
+**/build/
+**/dist/
+**/.gradle/
+**/out/
+
+# IDE/editor
+.idea/
+.vscode/
+**/.idea/
+**/.vscode/
+**/.claude/
+*.iml
+
+# OS garbage
+.DS_Store
+Thumbs.db
+
+# Local runtime and generated files
+**/uploads/
+**/*.log
+**/*.sqlite3
+**/*.sqlite
+**/*.db
+**/*.dump
+**/*.bak
+**/*.backup
+**/.m2/
+**/.cache/
+**/.tmp/
+**/tmp/
+**/.expo/
+**/*.tsbuildinfo
+**/.venv/
+**/venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+**/logs/
+**/user/agreements/
+**/user/profileImages/
+
+# Private local notes and diagnostic artifacts
+/info.txt
+/more.txt
+/outdated recent changes.txt
+/frontend/rentman-main/exception.txt
+/frontend/rentman-main/changes.diff
+/frontend/rentman-main/tmp_patch.diff
+/backend/core-service/src/main/resources/uploads/quick fix.txt
+/frontend/eventico-timeclock-mobile/tmp_expo_docs.html
+
+# Local signing keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+**/document-ai-credentials.json
+**/service-account.json
+**/service-account-key.json
+
+# Local app artifacts
+**/android/build/
+**/android/.gradle/
+**/android/app/build/
+**/ios/build/
+**/web-build/
